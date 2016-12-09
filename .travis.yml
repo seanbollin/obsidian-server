@@ -1,0 +1,12 @@
+sudo: required
+dist: trusty
+
+before_install:
+  - sudo apt-get -q -y update
+  - sudo apt-get install libboost-all-dev
+
+language: cpp
+
+compiler:
+  - clang
+  - gcc
