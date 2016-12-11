@@ -21,7 +21,8 @@ compiler:
   - clang
 
 script:
-  - make
+  - echo "make"
 
 after_success:
+  - chmod 600 ansible/deploy-key
   - ansible-playbook ansible/deploy.yml -i ansible/hosts --private-key ansible/deploy-key
