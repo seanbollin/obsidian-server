@@ -1,6 +1,9 @@
 sudo: required
 dist: trusty
 
+env:
+  - ANSIBLE_HOST_KEY_CHECKING=False
+
 notifications:
   email: false
 
@@ -16,7 +19,6 @@ language: cpp
 
 compiler:
   - clang
-  - gcc
 
 script:
   - make
