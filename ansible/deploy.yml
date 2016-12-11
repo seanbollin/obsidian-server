@@ -5,3 +5,9 @@
   tasks:
   - name: ensure git is installed
     apt: name=git state=present
+  
+  - name: ensure server user exists
+    user: name=server group=server 
+
+  - name: copy obsidian-server binary
+    copy: src=obsidian-server dest=/opt/obsidian-server/obsidian-server owner=server group=server mode=0700 force=yes 

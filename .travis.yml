@@ -21,7 +21,7 @@ compiler:
   - clang
 
 script:
-  - echo "make"
+  - make
 
 after_success:
   - chmod 600 ansible/deploy-key
