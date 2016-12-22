@@ -21,7 +21,7 @@
   - name: checkout obsidian-server repo from github
     become: yes
     become_user: server
-    git: repo=ssh://git@github.com:seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server
+    git: repo=ssh://git@github.com/seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server
 
   - name: build default target
     make: chdir=/home/server/obsidian-server
