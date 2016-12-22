@@ -15,6 +15,9 @@
   - name: update repositories cache and install "libboost-all-dev" package
     apt: name=libboost-all-dev update_cache=yes
 
+  - name: install g++
+    apt: name=g++
+
   - name: install make
     apt: name=make
 
