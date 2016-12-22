@@ -19,7 +19,7 @@
     file: path=/opt/obsidian-server state=directory
 
   - name: checkout obsidian-server repo from github
-    git: repo=ssh://git@github.com:seanbollin/obsidian-server.git dest=/home/server/obsidian-server
+    git: repo=ssh://git@github.com:seanbollin/obsidian-server.git accept_hostkey=yes dest=/home/server/obsidian-server
 
   - name: build default target
     make: chdir=/home/server/obsidian-server
