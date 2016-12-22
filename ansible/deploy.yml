@@ -15,6 +15,9 @@
   - name: update repositories cache and install "libboost-all-dev" package
     apt: name=libboost-all-dev update_cache=yes
 
+  - name: install make
+    apt: make
+
   - name: create directory
     file: path=/opt/obsidian-server state=directory
 
