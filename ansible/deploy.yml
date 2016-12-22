@@ -18,5 +18,8 @@
   - name: create directory
     file: path=/opt/obsidian-server state=directory
 
-  - name: copy obsidian-server binary
-    copy: src=../obsidian-server dest=/opt/obsidian-server/obsidian-server owner=server group=server mode=0700 force=yes 
+  - name: checkout obsidian-server repo from github
+    git: repo=ssh://git@github.com:seanbollin/obsidian-server.git dest=/home/server/obsidian-server
+
+  - name: build default target
+    make: chdir=/home/server/obsidian-server
