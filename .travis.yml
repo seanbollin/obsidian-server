@@ -25,4 +25,4 @@ script:
 
 after_success:
   - chmod 600 ansible/deploy-key
-  - ansible-playbook ansible/deploy.yml -i ansible/hosts --private-key ansible/deploy-key
+  - ansible-playbook ansible/deploy.yml -i ansible/hosts -vvvv --private-key ansible/deploy-key
