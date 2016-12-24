@@ -29,5 +29,12 @@
     become_user: server
     git: repo=ssh://git@github.com/seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server
 
-  - name: build default target
+  - name: make clean 
+    make: target=clean chdir=/home/server/obsidian-server
+
+  - name: make
     make: chdir=/home/server/obsidian-server
+  
+  - name: make install
+    make: target=install chdir=/home/server/obsidian-server
+    become: yes

@@ -8,7 +8,7 @@ notifications:
   email: false
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_84a53e325742_key -iv $encrypted_84a53e325742_iv -in ansible/deploy-key.enc -out ansible/deploy-key -d
+  - openssl aes-256-cbc -K $encrypted_84a53e325742_key -iv $encrypted_84a53e325742_iv -in deploy/deploy-key.enc -out deploy/deploy-key -d
   - sudo apt-add-repository ppa:ansible/ansible -y
   - sudo apt-get -qq update
   - sudo apt-get install software-properties-common
@@ -25,4 +25,4 @@ script:
 
 after_success:
   - chmod 600 ansible/deploy-key
-  - ansible-playbook ansible/deploy.yml -i ansible/hosts -vvvv --private-key ansible/deploy-key
+  - ansible-playbook deploy/deploy.yml -i deploy/hosts -vvvv --private-key deploy/deploy-key
