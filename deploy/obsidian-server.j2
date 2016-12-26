@@ -3,4 +3,6 @@ Description=Obsidian Server
 
 [Service]
 ExecStart=/usr/local/bin/obsidian-server
-
+User=server
+Group=server
+Restart=always

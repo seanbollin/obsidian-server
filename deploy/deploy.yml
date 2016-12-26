@@ -37,14 +37,11 @@
 
   - name: make
     make: chdir=/home/server/obsidian-server
-    sudo: true
-    sudo_user: server
+    become: true
+    become_user: server
   
-  - name: make install
-    make: target=install chdir=/home/server/obsidian-server
-
-  - name: change owner of binary
-    file: path=/home/server/obsidian-server owner=server group=server mode=0670
+  - name: place binary in final folder
+    copy: src=/home/server/obsidian-server/obsidian-server dest=/usr/local/bin/obsidian-server owner=server group=server mode=0670 backup=yes
 
   - name: start server
     systemd: state=restarted name=obsidian-server
