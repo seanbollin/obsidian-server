@@ -34,8 +34,6 @@
 
   - name: make
     make: chdir=/home/server/obsidian-server
-    become: yes
-    become_user: server
   
   - name: place binary in final folder
     copy: src=/home/server/obsidian-server/obsidian-server dest=/usr/local/bin/obsidian-server owner=server group=server mode=0670 backup=yes
