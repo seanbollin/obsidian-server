@@ -21,6 +21,9 @@
   - name: install make
     apt: name=make
 
+  - name: install obsidian-server systemd unit file
+    template: src=obsidian-server.j2 dest=/etc/systemd/system/obsidian-server.service
+
   - name: create directory
     file: path=/opt/obsidian-server state=directory
 
@@ -34,7 +37,14 @@
 
   - name: make
     make: chdir=/home/server/obsidian-server
+    sudo: true
+    sudo_user: server
   
   - name: make install
     make: target=install chdir=/home/server/obsidian-server
-    become: yes
+
+  - name: change owner of binary
+    file: path=/home/server/obsidian-server owner=server group=server mode=0670
+
+  - name: start server
+    systemd: state=restarted name=obsidian-server
