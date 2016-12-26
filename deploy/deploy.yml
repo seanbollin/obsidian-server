@@ -41,4 +41,4 @@
     copy: src=/home/server/obsidian-server/obsidian-server remote_src=yes dest=/usr/local/bin/obsidian-server owner=server group=server mode=0760 backup=yes
 
   - name: start server
-    systemd: state=restarted name=obsidian-server
+    systemd: daemon_reload=yes state=restarted name=obsidian-server
