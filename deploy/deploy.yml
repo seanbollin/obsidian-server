@@ -24,20 +24,17 @@
   - name: install obsidian-server systemd unit file
     template: src=obsidian-server.j2 dest=/etc/systemd/system/obsidian-server.service
 
-  - name: create directory
-    file: path=/opt/obsidian-server state=directory
-
   - name: checkout obsidian-server repo from github
     become: yes
     become_user: server
-    git: repo=ssh://git@github.com/seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server
+    git: repo=ssh://git@github.com/seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server update=yes
 
   - name: make clean 
     make: target=clean chdir=/home/server/obsidian-server
 
   - name: make
     make: chdir=/home/server/obsidian-server
-    become: true
+    become: yes
     become_user: server
   
   - name: place binary in final folder
