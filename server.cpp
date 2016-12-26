@@ -6,7 +6,7 @@
 using server = websocketpp::server<websocketpp::config::asio>;
 
 void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg) {
-        std::cout << msg->get_payload() << std::endl;
+	std::cout << "received message: " << msg->get_payload() << std::endl;
 }
 
 int main() {
