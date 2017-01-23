@@ -1,5 +1,4 @@
 #include "websocket_async_echo_server.hpp"
-#include <iostream>
 
 /// Block until SIGINT or SIGTERM is received.
 inline

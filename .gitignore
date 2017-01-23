@@ -1,3 +1,5 @@
+cmake-build-debug/
+.idea/
 *.o
 obsidian-server
 a.out
