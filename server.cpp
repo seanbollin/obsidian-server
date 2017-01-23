@@ -1,54 +1,31 @@
-#include <set>
+#include "websocket_async_echo_server.hpp"
+#include <iostream>
 
-#include <websocketpp/config/asio_no_tls.hpp>
-#include <websocketpp/server.hpp>
-
-using server = websocketpp::server<websocketpp::config::asio>;
-
-using websocketpp::connection_hdl;
-using websocketpp::lib::placeholders::_1;
-using websocketpp::lib::placeholders::_2;
-using websocketpp::lib::bind;
-
-class broadcast_server {
-public:
-    broadcast_server() {
-        m_server.init_asio();
-                
-        m_server.set_open_handler(bind(&broadcast_server::on_open,this,::_1));
-        m_server.set_close_handler(bind(&broadcast_server::on_close,this,::_1));
-        m_server.set_message_handler(bind(&broadcast_server::on_message,this,::_1,::_2));
-    }
-    
-    void on_open(connection_hdl hdl) {
-        m_connections.insert(hdl);
-    }
-    
-    void on_close(connection_hdl hdl) {
-        m_connections.erase(hdl);
-    }
-    
-    void on_message(connection_hdl hdl, server::message_ptr msg) {
-   		std::cout << "received message: " << msg->get_payload() << std::endl;
-        for (auto it : m_connections) {
-        	std::cout << "sending message ..." << std::endl;
-            m_server.send(it,msg);
-        }
-    }
-
-    void run(uint16_t port) {
-        m_server.listen(port);
-        m_server.start_accept();
-        m_server.run();
-    }
-private:
-    typedef std::set<connection_hdl,std::owner_less<connection_hdl>> con_list;
-
-    server m_server;
-    con_list m_connections;
-};
+/// Block until SIGINT or SIGTERM is received.
+inline
+void
+sig_wait() {
+    boost::asio::io_service ios;
+    boost::asio::signal_set signals(
+        ios, SIGINT, SIGTERM);
+    signals.async_wait(
+        [&](boost::system::error_code const&, int)
+        {
+        });
+    ios.run();
+}
 
 int main() {
-    broadcast_server server;
-    server.run(9002);
+    using endpoint_type = boost::asio::ip::tcp::endpoint;
+    using address_type = boost::asio::ip::address;
+
+    boost::system::error_code ec;
+
+    try {
+        beast::websocket::async_echo_server server{&std::cout, 1};
+        server.open(true, endpoint_type{address_type::from_string("127.0.0.1"), 33435}, ec);
+        sig_wait();
+    } catch(std::exception const& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
 }

@@ -1,3 +1,6 @@
 [submodule "includes/websocketpp"]
 	path = includes/websocketpp
 	url = https://github.com/zaphoyd/websocketpp.git
+[submodule "includes/beast"]
+	path = includes/beast
+	url = https://github.com/vinniefalco/Beast.git

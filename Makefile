@@ -2,10 +2,10 @@ INSTALL = /usr/bin/install
 prefix = /usr/local
 bindir = $(prefix)/bin
 
-includes = includes/websocketpp/
+includes = includes/beast/include/
 
 obsidian-server: server.o
-	$(CXX) -o obsidian-server server.o -lboost_system -lstdc++ -std=c++11
+	$(CXX) -o obsidian-server server.o -lpthread -lboost_system -lstdc++ -std=c++11
 
 server.o: server.cpp
 	$(CXX) -D BOOST_ASIO_HAS_STD_CHRONO -c server.cpp -I $(includes) -std=c++11
