@@ -259,51 +259,47 @@ private:
                 return;
 
             // got message
-            case 2:
-                if(ec == error::closed)
+            case 2: {
+                if (ec == error::closed)
                     return;
-                if(ec)
+                if (ec)
                     return fail(ec, "async_read");
-                if(match(d.db, "RAW"))
-                {
+                if (match(d.db, "RAW")) {
                     d.state = 1;
                     boost::asio::async_write(d.ws.next_layer(),
-                        d.db.data(), d.strand.wrap(std::move(*this)));
+                                             d.db.data(), d.strand.wrap(std::move(*this)));
                     return;
-                }
-                else if(match(d.db, "TEXT"))
-                {
+                } else if (match(d.db, "TEXT")) {
                     d.state = 1;
                     d.ws.set_option(message_type{opcode::text});
                     d.ws.async_write(
-                        d.db.data(), d.strand.wrap(std::move(*this)));
+                            d.db.data(), d.strand.wrap(std::move(*this)));
                     return;
-                }
-                else if(match(d.db, "PING"))
-                {
+                } else if (match(d.db, "PING")) {
                     ping_data payload;
                     d.db.consume(buffer_copy(
-                        buffer(payload.data(), payload.size()),
+                            buffer(payload.data(), payload.size()),
                             d.db.data()));
                     d.state = 1;
                     d.ws.async_ping(payload,
-                        d.strand.wrap(std::move(*this)));
+                                    d.strand.wrap(std::move(*this)));
                     return;
-                }
-                else if(match(d.db, "CLOSE"))
-                {
+                } else if (match(d.db, "CLOSE")) {
                     d.state = 1;
                     d.ws.async_close({},
-                        d.strand.wrap(std::move(*this)));
+                                     d.strand.wrap(std::move(*this)));
                     return;
                 }
                 // write message
                 d.state = 1;
                 d.ws.set_option(message_type(d.op));
-                d.ws.async_write(d.db.data(),
-                    d.strand.wrap(std::move(*this)));
+                boost::asio::streambuf b;
+                std::ostream os(&b);
+                os << "Hello from obsidian-server!";
+                d.ws.async_write(b.data(),
+                                 d.strand.wrap(std::move(*this)));
                 return;
-
+            }
             // connected
             case 4:
                 if(ec)
