@@ -1,16 +1,11 @@
 #include "websocket_async_echo_server.hpp"
 
 /// Block until SIGINT or SIGTERM is received.
-inline
-void
-sig_wait() {
+inline void sig_wait() {
     boost::asio::io_service ios;
     boost::asio::signal_set signals(
         ios, SIGINT, SIGTERM);
-    signals.async_wait(
-        [&](boost::system::error_code const&, int)
-        {
-        });
+    signals.async_wait([&](boost::system::error_code const&, int){});
     ios.run();
 }
 
