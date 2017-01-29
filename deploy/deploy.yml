@@ -12,8 +12,14 @@
   - name: ensure server user exists
     user: name=server group=server 
 
-  - name: update repositories cache and install "libboost-all-dev" package
-    apt: name=libboost-all-dev update_cache=yes
+  - name: update repositories cache and install "python-pip" package
+    apt: name=python-pip update_cache=yes
+
+  - name: install cmake
+    apt: name=cmake
+
+  - name: install conan
+    pip: name=conan
 
   - name: install g++
     apt: name=g++
@@ -32,13 +38,22 @@
     become_user: server
     git: repo=ssh://git@github.com/seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server update=yes
 
+  - name:
+    file: path=/home/server/obsidian-server/build state=directory
+
+  - name: install dependencies with conan
+    command: chdir=/home/server/obsidian-server/build command=conan install ..
+
+  - name: run cmake
+    command: chdir=/home/server/obsidian-server/build command=cmake ..
+
   - name: make
-    make: chdir=/home/server/obsidian-server
+    make: chdir=/home/server/obsidian-server/build
     become: yes
     become_user: server
 
   - name: place binary in final folder
-    copy: src=/home/server/obsidian-server/obsidian-server remote_src=yes dest=/usr/local/bin/obsidian-server owner=server group=server mode=0760 backup=yes
+    copy: src=/home/server/obsidian-server/build/bin/obsidian-server remote_src=yes dest=/usr/local/bin/obsidian-server owner=server group=server mode=0760 backup=yes
 
   - name: start server
     systemd: daemon_reload=yes state=restarted name=obsidian-server
