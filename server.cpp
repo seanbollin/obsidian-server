@@ -17,7 +17,7 @@ int main() {
 
     try {
         beast::websocket::async_echo_server server{&std::cout, 1};
-        server.open(true, endpoint_type{address_type::from_string("127.0.0.1"), 33435}, ec);
+        server.open(true, endpoint_type{address_type::from_string("159.203.196.212"), 33435}, ec);
         sig_wait();
     } catch(std::exception const& e) {
         std::cout << "Error: " << e.what() << std::endl;
