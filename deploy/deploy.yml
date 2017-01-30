@@ -42,10 +42,14 @@
     file: path=/home/server/obsidian-server/build state=directory
 
   - name: install dependencies with conan
-    command: chdir=/home/server/obsidian-server/build command=conan install ..
+    command: conan install ..
+    args:
+      chdir: /home/server/obsidian-server/build
 
   - name: run cmake
-    command: chdir=/home/server/obsidian-server/build command=cmake ..
+    command: cmake ..
+    args:
+      chdir: /home/server/obsidian-server/build
 
   - name: make
     make: chdir=/home/server/obsidian-server/build
