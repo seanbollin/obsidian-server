@@ -55,6 +55,18 @@
     become: yes
     become_user: server
 
+  - name: Create swap space
+    command: dd if=/dev/zero of=/var/swap.img bs=1024k count=1000
+    when: ansible_swaptotal_mb < 1
+
+  - name: Make swap
+    command: mkswap /var/swap.img
+    when: ansible_swaptotal_mb < 1
+
+  - name: Turn swap on
+    command: swapon /var/swap.img
+    when: ansible_swaptotal_mb < 1
+
   - name: make
     make: chdir=/home/server/obsidian-server/build
     become: yes
