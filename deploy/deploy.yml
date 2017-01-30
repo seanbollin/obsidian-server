@@ -38,18 +38,22 @@
     become_user: server
     git: repo=ssh://git@github.com/seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server update=yes
 
-  - name:
-    file: path=/home/server/obsidian-server/build state=directory
+  - name: create build dir
+    file: path=/home/server/obsidian-server/build state=directory owner=server group=server
 
   - name: install dependencies with conan
     command: conan install ..
     args:
       chdir: /home/server/obsidian-server/build
+    become: yes
+    become_user: server
 
   - name: run cmake
     command: cmake ..
     args:
       chdir: /home/server/obsidian-server/build
+    become: yes
+    become_user: server
 
   - name: make
     make: chdir=/home/server/obsidian-server/build
