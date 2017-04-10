@@ -3,29 +3,32 @@
 
 #include <iostream>
 
-class WSConnection : public std::enable_shared_from_this<WSConnection>
-{
-public:
-    using boost::asio::ip::tcp;
+using boost::asio::ip::tcp;
 
-    // TODO: Make ctor private
-    WSConnection(boost::asio::io_service& io_service) : ws_(io_service) {}
+class Connection : public std::enable_shared_from_this<Connection>
+{
+private:
+    struct _constructor_tag { explicit _constructor_tag() = default; }; // make_shared private ctor hack
+
+public:
+    Connection(_constructor_tag tag, boost::asio::io_service& io_service) : ws_(io_service) {
+        buf_ << "Hello from obsidian-server!";
+    }
 
     static auto create(boost::asio::io_service& io_service)
     {
-        return std::make_shared<WSConnection>(io_service);
+        return std::make_shared<Connection>(_constructor_tag{}, io_service);
     }
 
     void handshake()
     {
-        auto self = shared_from_this();
-        ws_.async_accept([self]() {
-                    std::cout << "handle_accept" << std::endl;
-                    beast::streambuf buf;
-                    buf << "Hello from obsidian-server!"; // TODO: This data is going to die?
-                    ws_.async_write(buf.data(), [self]() {});
-                }
-        );
+        ws_.async_accept([self = shared_from_this()] (auto error) {
+            self->ws_.async_read(self->op_, self->db_, [self] (auto error) {
+                self->ws_.async_write(self->buf_.data(), [self] (auto error) {
+                    // and continue ...
+                });
+            });
+        });
     }
 
     tcp::socket& socket()
@@ -35,12 +38,13 @@ public:
 
 private:
     beast::websocket::stream<boost::asio::ip::tcp::socket> ws_;
+    beast::websocket::opcode op_;
+    beast::streambuf db_;
+    beast::streambuf buf_;
 };
 
 class RubyMUDServer {
 public:
-    using boost::asio::ip::tcp;
-
     RubyMUDServer(boost::asio::io_service& io_service) : acceptor_(io_service, tcp::endpoint(tcp::v4(), 33435))
     {
         start_accept();
@@ -49,11 +53,10 @@ public:
 private:
     void start_accept()
     {
-        auto connection = WSConnection::create(acceptor_.get_io_service());
+        auto connection = Connection::create(acceptor_.get_io_service());
         acceptor_.async_accept(
                 connection->socket(),
-                [connection,this] (auto error) {
-                    std::cout << "handle_accept" << std::endl;
+                [connection, this] (auto error) {
                     if (!error) {
                        connection->handshake();
                     } else {
