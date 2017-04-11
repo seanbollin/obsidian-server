@@ -22,12 +22,25 @@ public:
 
     void handshake()
     {
-        ws_.async_accept([self = shared_from_this()] (auto error) {
-            self->ws_.async_read(self->op_, self->db_, [self] (auto error) {
-                self->ws_.async_write(self->buf_.data(), [self] (auto error) {
-                    // and continue ...
-                });
-            });
+        auto self = shared_from_this();
+        ws_.async_accept([self] (auto error) {
+            self->read();
+        });
+    }
+
+    void read()
+    {
+        auto self = shared_from_this();
+        ws_.async_read(self->op_, self->db_, [self] (auto error) {
+            self->write();
+        });
+    }
+
+    void write()
+    {
+        auto self = shared_from_this();
+        ws_.async_write(self->buf_.data(), [self] (auto error) {
+            self->read();
         });
     }
 
