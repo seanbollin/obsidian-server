@@ -3,8 +3,23 @@
 
 #include <memory>
 #include <iostream>
+#include <string>
 
 // Copyright 2017 Sean Bollin
+
+class Room {
+ public:
+    Room(std::string title, std::string description)
+            : title(title), description(description),
+              titleAndDescription(title + ": " + description) {}
+    operator const char*() const {
+        return titleAndDescription.c_str();
+    }
+ private:
+    std::string title;
+    std::string description;
+    std::string titleAndDescription;
+};
 
 using boost::asio::ip::tcp;
 
@@ -16,7 +31,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
  public:
     Connection(_constructor_tag tag, boost::asio::io_service& io_service) // NOLINT
             : ws_(io_service) {
-        buf_ << "Hello from obsidian-server!";
+        outputBuffer_ << room_;
     }
 
     static auto create(boost::asio::io_service& io_service) { // NOLINT
@@ -32,14 +47,14 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
     void read() {
         auto self = shared_from_this();
-        ws_.async_read(self->op_, self->db_, [self] (auto error) {
+        ws_.async_read(self->op_, self->inputBuffer_, [self] (auto error) {
             self->write();
         });
     }
 
     void write() {
         auto self = shared_from_this();
-        ws_.async_write(self->buf_.data(), [self] (auto error) {
+        ws_.async_write(self->outputBuffer_.data(), [self] (auto error) {
             self->read();
         });
     }
@@ -49,10 +64,12 @@ class Connection : public std::enable_shared_from_this<Connection> {
     }
 
  private:
+    Room room_{"Swagglesworth Yard", "The smell of manure permeates the area."};
+
     beast::websocket::stream<boost::asio::ip::tcp::socket> ws_;
     beast::websocket::opcode op_;
-    beast::streambuf db_;
-    beast::streambuf buf_;
+    beast::streambuf inputBuffer_;
+    beast::streambuf outputBuffer_;
 };
 
 class RubyMUDServer {
