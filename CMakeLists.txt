@@ -17,8 +17,10 @@ set(ObsidianServer_VERSION_MINOR 1)
 find_package(Boost COMPONENTS system REQUIRED)
 find_package(Threads REQUIRED)
 
+add_subdirectory(tests)
+
 include_directories(includes/beast/include/)
 
-add_executable(obsidian-server server.cpp)
+add_executable(obsidian-server server.cpp room.cpp room.h)
 
 target_link_libraries(obsidian-server ${Boost_SYSTEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})

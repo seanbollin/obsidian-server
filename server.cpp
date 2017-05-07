@@ -1,3 +1,5 @@
+// Copyright 2017 Sean Bollin
+
 #include <beast/websocket.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
@@ -5,27 +7,13 @@
 #include <iostream>
 #include <string>
 
-// Copyright 2017 Sean Bollin
-
-class Room {
- public:
-    Room(std::string title, std::string description)
-            : title(title), description(description),
-              titleAndDescription(title + ": " + description) {}
-    operator const char*() const {
-        return titleAndDescription.c_str();
-    }
- private:
-    std::string title;
-    std::string description;
-    std::string titleAndDescription;
-};
+#include "room.h"
 
 using boost::asio::ip::tcp;
 
 class Connection : public std::enable_shared_from_this<Connection> {
  private:
-    // make_shared private ctor hack
+    // make_shared private ctor
     struct _constructor_tag { explicit _constructor_tag() = default; };
 
  public:
