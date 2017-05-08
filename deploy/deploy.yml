@@ -48,7 +48,7 @@
   - name: install dependencies with conan
     command: conan install ..
     args:
-      chdir: {{ build_dir }}
+      chdir: "{{ build_dir }}"
     become: yes
     become_user: server
 
