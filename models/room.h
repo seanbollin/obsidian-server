@@ -1,10 +1,12 @@
-#ifndef OBSIDIANSERVER_ROOM_H
-#define OBSIDIANSERVER_ROOM_H
+// Copyright 2017 Sean Bollin
+
+#ifndef MODELS_ROOM_H_
+#define MODELS_ROOM_H_
 
 #include <string>
 
 class Room {
-public:
+ public:
     Room(std::string title, std::string description)
             : title(title),
               description(description),
@@ -17,10 +19,10 @@ public:
         return titleAndDescription.c_str();
     }
 
-private:
+ private:
     std::string title;
     std::string description;
     std::string titleAndDescription;
 };
 
-#endif //OBSIDIANSERVER_ROOM_H
+#endif  // MODELS_ROOM_H_
