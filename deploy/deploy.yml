@@ -84,7 +84,7 @@
   - name: Run tests
     command: ctest
     args:
-      chdir: {{ build_dir }}
+      chdir: "{{ build_dir }}"
 
   - name: place binary in final folder
     copy: src={{ build_dir }}/bin/obsidian-server remote_src=yes dest=/usr/local/bin/obsidian-server owner=server group=server mode=0760 backup=yes
