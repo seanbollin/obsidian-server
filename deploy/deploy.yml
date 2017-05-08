@@ -3,6 +3,10 @@
   remote_user: root
 
   tasks:
+  - name: Set facts
+    set_fact:
+      build_dir: /home/server/obsidian-server/build
+
   - name: ensure git is installed
     apt: name=git state=present
 
@@ -39,19 +43,19 @@
     git: repo=ssh://git@github.com/seanbollin/obsidian-server.git key_file=/home/server/.ssh/id_rsa accept_hostkey=yes dest=/home/server/obsidian-server update=yes
 
   - name: create build dir
-    file: path=/home/server/obsidian-server/build state=directory owner=server group=server
+    file: path={{ build_dir }} state=directory owner=server group=server
 
   - name: install dependencies with conan
     command: conan install ..
     args:
-      chdir: /home/server/obsidian-server/build
+      chdir: {{ build_dir }}
     become: yes
     become_user: server
 
   - name: run cmake
     command: cmake ..
     args:
-      chdir: /home/server/obsidian-server/build
+      chdir: {{ build_dir }}
     become: yes
     become_user: server
 
@@ -67,13 +71,23 @@
     command: swapon /var/swap.img
     when: ansible_swaptotal_mb < 1
 
-  - name: make
-    make: chdir=/home/server/obsidian-server/build
+  - name: make cpplint
+    make: chdir={{ build_dir }} target=cpplint
     become: yes
     become_user: server
 
+  - name: make
+    make: chdir={{ build_dir }}
+    become: yes
+    become_user: server
+
+  - name: Run tests
+    command: ctest
+    args:
+      chdir: {{ build_dir }}
+
   - name: place binary in final folder
-    copy: src=/home/server/obsidian-server/build/bin/obsidian-server remote_src=yes dest=/usr/local/bin/obsidian-server owner=server group=server mode=0760 backup=yes
+    copy: src={{ build_dir }}/bin/obsidian-server remote_src=yes dest=/usr/local/bin/obsidian-server owner=server group=server mode=0760 backup=yes
 
   - name: start server
     systemd: daemon_reload=yes state=restarted name=obsidian-server

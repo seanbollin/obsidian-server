@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 
-#include "room.h"
+#include "models/room.h"
 
 using boost::asio::ip::tcp;
 

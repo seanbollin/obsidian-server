@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
-#include "catch/catch.h"
+#include <catch.h>
 
-#include "../room.h"
+#include "../models/room.h"
 
 TEST_CASE("Rooms have a title and description", "[Room][title][description]" ) {
     std::string title = "Village Center";
