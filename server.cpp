@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
     }
 
     const unsigned short port = (unsigned short) std::strtoul(
-        argv[3],
+        argv[2],
         nullptr,
         10);
 
