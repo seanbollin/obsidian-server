@@ -4,25 +4,38 @@
 #define MODELS_ROOM_H_
 
 #include <string>
+#include <vector>
+#include "exit.h"
 
 class Room {
  public:
-    Room(std::string title, std::string description)
-            : title(title),
-              description(description),
-              titleAndDescription(title + ": " + description) {}
+    Room(unsigned int id, std::string title, std::string description)
+            : id_(id),
+              title_(title),
+              description_(description),
+              titleAndDescription_(title + ": " + description) {}
 
+    static const std::string EXITS_PREFIX;
+
+    unsigned int getId() const;
     const std::string& getTitle() const;
     const std::string& getDescription() const;
+    const std::string getExitsString() const;
+
+    void setExits(std::vector<Exit> exits);
 
     operator const char*() const {
-        return titleAndDescription.c_str();
+        return titleAndDescription_.c_str();
     }
 
  private:
-    std::string title;
-    std::string description;
-    std::string titleAndDescription;
+    unsigned int id_;
+    std::string title_;
+    std::string description_;
+    std::string titleAndDescription_;
+    std::vector<Exit> exits_;
+
+    const std::string listExits() const;
 };
 
 #endif  // MODELS_ROOM_H_

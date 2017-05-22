@@ -8,7 +8,7 @@ else()
 endif()
 conan_basic_setup()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wextra -lstdc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -lstdc++")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 set(ObsidianServer_VERSION_MAJOR 0)
@@ -27,7 +27,7 @@ set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/includes/catch)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
-set(SRCS server.cpp models/room.h models/room.cpp)
+set(SRCS server.cpp models/room.h models/room.cpp models/exit.cpp models/exit.h)
 
 add_executable(obsidian-server ${SRCS})
 

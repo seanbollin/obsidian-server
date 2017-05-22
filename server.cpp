@@ -6,6 +6,7 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <cstdlib>
 
 #include "models/room.h"
 
@@ -17,7 +18,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
     struct _constructor_tag { explicit _constructor_tag() = default; };
 
  public:
-    Connection(_constructor_tag tag, boost::asio::io_service& io_service) // NOLINT
+    Connection(_constructor_tag, boost::asio::io_service& io_service) // NOLINT
             : ws_(io_service) {
         outputBuffer_ << room_;
     }
@@ -29,13 +30,15 @@ class Connection : public std::enable_shared_from_this<Connection> {
     void handshake() {
         auto self = shared_from_this();
         ws_.async_accept([self] (auto error) {
-            self->read();
+          if (error.value() != boost::system::errc::success) { std::cout << "Error: async_read " << error.value(); }
+          self->read();
         });
     }
 
     void read() {
         auto self = shared_from_this();
         ws_.async_read(self->op_, self->inputBuffer_, [self] (auto error) {
+            if (error.value() != boost::system::errc::success) { std::cout << "Error: async_read " << error.value(); }
             self->write();
         });
     }
@@ -43,7 +46,8 @@ class Connection : public std::enable_shared_from_this<Connection> {
     void write() {
         auto self = shared_from_this();
         ws_.async_write(self->outputBuffer_.data(), [self] (auto error) {
-            self->read();
+          if (error.value() != boost::system::errc::success) { std::cout << "Error: async_read " << error.value(); }
+          self->read();
         });
     }
 
@@ -52,7 +56,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
     }
 
  private:
-    Room room_{"Swagglesworth Yard", "The smell of manure permeates the area."};
+    Room room_{1, "Swagglesworth Yard", "The smell of manure permeates the area."};
 
     beast::websocket::stream<boost::asio::ip::tcp::socket> ws_;
     beast::websocket::opcode op_;
@@ -62,8 +66,8 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
 class RubyMUDServer {
  public:
-    explicit RubyMUDServer(boost::asio::io_service& io_service) // NOLINT
-            : acceptor_(io_service, tcp::endpoint(tcp::v4(), 33435)) {
+    explicit RubyMUDServer(boost::asio::io_service& io_service, unsigned short port) // NOLINT
+            : acceptor_(io_service, tcp::endpoint(tcp::v4(), port)) {
         start_accept();
     }
 
@@ -97,14 +101,16 @@ class RubyMUDServer {
 // }
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: server <ip address>" << '\n';
+    if (argc < 3) {
+        std::cerr << "Usage: server <ip address> <port>" << '\n';
         return 1;
     }
 
+    const unsigned short port = (unsigned short) std::strtoul(argv[3], nullptr, 10);
+
     try {
         boost::asio::io_service io_service;
-        RubyMUDServer server(io_service);
+        RubyMUDServer server(io_service, port);
         io_service.run();
         // sig_wait();
     } catch (std::exception& e) {
