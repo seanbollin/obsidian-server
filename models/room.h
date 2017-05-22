@@ -5,7 +5,7 @@
 
 #include <string>
 #include <vector>
-#include "exit.h"
+#include "../models/exit.h"
 
 class Room {
  public:
@@ -15,7 +15,7 @@ class Room {
               description_(description),
               titleAndDescription_(title + ": " + description) {}
 
-    static const std::string EXITS_PREFIX;
+    constexpr static const char* const EXITS_PREFIX = "Obvious exits:";
 
     unsigned int getId() const;
     const std::string& getTitle() const;

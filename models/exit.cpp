@@ -1,4 +1,9 @@
-#include "exit.h"
+// Copyright 2017 Sean Bollin
+
+#include <unordered_map>
+#include <string>
+
+#include "../models/exit.h"
 
 const std::unordered_map<std::string, std::string> Exit::FULL_CARDINALS{
     {"n", "north"},
